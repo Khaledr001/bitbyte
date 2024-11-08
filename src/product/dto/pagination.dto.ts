@@ -1,19 +1,25 @@
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsNotEmpty,
+} from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 export class PaginationOptions {
   @ApiPropertyOptional({ example: 1, description: 'Page number' })
-  @Transform(({ value }) => parseInt(value))
   @IsNumber()
-  @IsOptional()
-  page: number = 1;
+  @Type(() => Number)
+  @IsNotEmpty()
+  page: number;
 
   @ApiPropertyOptional({ example: 20, description: 'Number of items per page' })
-  @Transform(({ value }) => parseInt(value))
   @IsNumber()
-  @IsOptional()
-  limit: number = 10;
+  @Type(() => Number)
+  @IsNotEmpty()
+  limit: number;
 }
 
 export class SortOptions {

@@ -9,6 +9,7 @@ import {
   HttpStatus,
   UsePipes,
   ValidationPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiResponse, ApiOperation, ApiParam } from '@nestjs/swagger';
 import { UserService } from './user.service';
@@ -16,6 +17,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ResponseService } from '../shared/response.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
 
 @ApiTags('Users')
 @Controller('users')
@@ -32,6 +34,7 @@ export class UserController {
     description: 'The user has been successfully created.',
     type: UserResponseDto,
   })
+  @UseGuards(JwtAuthGuard)
   @UsePipes(ValidationPipe)
   async create(@Body() createUserDto: CreateUserDto) {
     try {
@@ -84,7 +87,7 @@ export class UserController {
   })
   async findOne(@Param('id') id: number) {
     try {
-      const user = await this.userService.findOne(id);
+      const user = await this.userService.findOne({ id });
       return this.responseService.success(
         user,
         'User retrieved successfully',

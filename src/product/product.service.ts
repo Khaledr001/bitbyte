@@ -42,7 +42,12 @@ export class ProductService {
       OR: filterOptions.search
         ? [
             { name: { contains: filterOptions.search, mode: 'insensitive' } },
-            { description: { contains: filterOptions.search, mode: 'insensitive' } },
+            {
+              description: {
+                contains: filterOptions.search,
+                mode: 'insensitive',
+              },
+            },
           ]
         : undefined,
     };

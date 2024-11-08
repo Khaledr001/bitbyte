@@ -3,10 +3,16 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { User } from "@prisma/client"
+import { User } from '@prisma/client';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import * as bcrypt from 'bcryptjs';
+
+interface IfindOption {
+  id?: number;
+  email?: string;
+}
 
 @Injectable()
 export class UserService {
@@ -14,6 +20,7 @@ export class UserService {
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     try {
+      createUserDto.password = await bcrypt.hash(createUserDto.password, 10);
       const user = await this.databaseService.user.create({
         data: {
           ...createUserDto,
@@ -33,11 +40,18 @@ export class UserService {
     }
   }
 
-  async findOne(id: number): Promise<User> {
+  async findOne(find: IfindOption): Promise<User> {
     try {
-      const user = await this.databaseService.user.findUnique({
-        where: { id: Number(id) },
-      });
+      let user;
+      if (find.email) {
+        user = await this.databaseService.user.findUnique({
+          where: { email: find.email },
+        });
+      } else {
+        user = await this.databaseService.user.findUnique({
+          where: { id: Number(find.id) },
+        });
+      }
       if (!user) {
         throw new NotFoundException('User not found');
       }
@@ -46,7 +60,6 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
   }
-
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     try {

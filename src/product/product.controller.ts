@@ -8,6 +8,8 @@ import {
   Delete,
   Query,
   HttpStatus,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -32,6 +34,8 @@ import {
   SuccessResponse,
 } from 'src/shared/dto/success-response.dto';
 import { ErrorResponse } from 'src/shared/dto/error-response.dto';
+import { Roles } from 'src/auth/decorator/role.decorator';
+import { Role } from 'src/shared/role-enum';
 
 @ApiTags('Products')
 @Controller('products')
@@ -54,6 +58,7 @@ export class ProductController {
     description: 'Failed to create product.',
     type: ErrorResponse,
   })
+  @Roles(Role.ADMIN)
   async create(@Body() createProductDto: CreateProductDto) {
     try {
       const product = await this.productService.create(createProductDto);
@@ -116,10 +121,11 @@ export class ProductController {
     description: 'Product not found.',
     type: ErrorResponse,
   })
+  @UsePipes(ValidationPipe)
   async findAll(
-    @Query() paginationOptions: PaginationOptions,
-    @Query() sortOptions: SortOptions,
-    @Query() filterOptions: FilterOptions,
+    @Query(ValidationPipe) paginationOptions: PaginationOptions,
+    @Query(ValidationPipe) sortOptions: SortOptions,
+    @Query(ValidationPipe) filterOptions: FilterOptions,
   ) {
     try {
       const result = await this.productService.findAll(
@@ -158,6 +164,7 @@ export class ProductController {
     description: 'Product not found.',
     type: ErrorResponse,
   })
+  @Roles(Role.ADMIN)
   async update(
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
@@ -191,6 +198,7 @@ export class ProductController {
     description: 'Product not found.',
     type: ErrorResponse,
   })
+  @Roles(Role.ADMIN)
   async remove(@Param('id') id: string) {
     try {
       const product = await this.productService.remove(+id);
