@@ -32,9 +32,10 @@ export class ProductService {
     sortOptions: SortOptions,
     filterOptions: FilterOptions,
   ): Promise<{ items: Product[]; total: number }> {
-    const { page, limit } = paginationOptions;
-    const { sortField, sortOrder } = sortOptions;
+    const { sortField = 'createdAt', sortOrder = 'desc' } = sortOptions;
     const { category } = filterOptions;
+    const page = Number(paginationOptions.page),
+      limit = Number(paginationOptions.limit);
 
     const where: Prisma.ProductWhereInput = {
       category: category ? { equals: category } : undefined,
@@ -45,17 +46,21 @@ export class ProductService {
     };
 
     try {
-      const items = await this.databaseService.product.findMany({
-        where,
-        orderBy,
-        skip: (page - 1) * limit,
-        take: limit,
-      });
-      const total = await this.databaseService.product.count({ where });
+      const [items, total] = await Promise.all([
+        this.databaseService.product.findMany({
+          where,
+          orderBy,
+          skip: (page - 1) * limit,
+          take: limit,
+        }),
+        this.databaseService.product.count({ where }),
+      ]);
 
       return { items, total };
     } catch (error) {
-      throw new BadRequestException('Failed to retrieve products');
+      throw new BadRequestException(
+        `Failed to retrieve products: ${error.message}`,
+      );
     }
   }
 

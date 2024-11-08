@@ -1,5 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import { CreateProductDto } from './create-product.dto';
 
 export class UpdateProductDto extends PartialType(CreateProductDto) {
@@ -16,6 +17,7 @@ export class UpdateProductDto extends PartialType(CreateProductDto) {
   description?: string;
 
   @ApiPropertyOptional({ example: 34.99, description: 'Price of the product' })
+  @Transform(({ value }) => (value !== undefined ? parseFloat(value) : value))
   price?: number;
 
   @ApiPropertyOptional({

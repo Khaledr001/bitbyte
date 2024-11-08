@@ -1,13 +1,16 @@
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 export class PaginationOptions {
-  @ApiPropertyOptional({ example: 2, description: 'Page number' })
+  @ApiPropertyOptional({ example: 1, description: 'Page number' })
+  @Transform(({ value }) => parseInt(value)) 
   @IsNumber()
   @IsOptional()
   page: number = 1;
 
   @ApiPropertyOptional({ example: 20, description: 'Number of items per page' })
+  @Transform(({ value }) => parseInt(value))
   @IsNumber()
   @IsOptional()
   limit: number = 10;

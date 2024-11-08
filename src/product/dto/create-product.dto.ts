@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 export class CreateProductDto {
   @ApiProperty({ example: 'Product A', description: 'Name of the product' })
@@ -16,6 +17,7 @@ export class CreateProductDto {
   description: string;
 
   @ApiProperty({ example: 29.99, description: 'Price of the product' })
+  @Transform(({ value }) => parseFloat(value))
   @IsNotEmpty()
   @IsNumber()
   price: number;
