@@ -25,3 +25,18 @@ model Product {
   @@index([name])
   @@index([description])
 }
+
+model User {
+  id        Int      @id @default(autoincrement())
+  role      Role
+  name      String   @db.VarChar(150)
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  admin
+  user
+}

@@ -6,6 +6,8 @@ import { APP_CONFIG } from './config/app.config';
 import { DatabaseModule } from './database/database.module';
 import { ProductModule } from './product/product.module';
 import { SharedModule } from './shared/shared.module';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { SharedModule } from './shared/shared.module';
     DatabaseModule,
     ProductModule,
     SharedModule,
+    AuthModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
