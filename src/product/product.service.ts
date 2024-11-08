@@ -39,6 +39,12 @@ export class ProductService {
 
     const where: Prisma.ProductWhereInput = {
       category: category ? { equals: category } : undefined,
+      OR: filterOptions.search
+        ? [
+            { name: { contains: filterOptions.search, mode: 'insensitive' } },
+            { description: { contains: filterOptions.search, mode: 'insensitive' } },
+          ]
+        : undefined,
     };
 
     const orderBy: Prisma.ProductOrderByWithRelationInput = {

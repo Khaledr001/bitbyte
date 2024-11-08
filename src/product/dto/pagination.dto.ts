@@ -4,7 +4,7 @@ import { Transform } from 'class-transformer';
 
 export class PaginationOptions {
   @ApiPropertyOptional({ example: 1, description: 'Page number' })
-  @Transform(({ value }) => parseInt(value)) 
+  @Transform(({ value }) => parseInt(value))
   @IsNumber()
   @IsOptional()
   page: number = 1;
@@ -43,4 +43,12 @@ export class FilterOptions {
   @IsString()
   @IsOptional()
   category: string;
+
+  @ApiPropertyOptional({
+    example: 'product',
+    description: 'Fulltext search field',
+  })
+  @IsOptional()
+  @IsString()
+  search: string = 'product';
 }
