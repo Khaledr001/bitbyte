@@ -64,14 +64,14 @@ export class UserService {
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     try {
       const existingUser = await this.databaseService.user.findUnique({
-        where: { id },
+        where: { id: Number(id) },
       });
       if (!existingUser) {
         throw new NotFoundException('User not found');
       }
 
       return await this.databaseService.user.update({
-        where: { id },
+        where: { id: Number(id) },
         data: updateUserDto,
       });
     } catch (error) {
@@ -82,14 +82,14 @@ export class UserService {
   async remove(id: number): Promise<User> {
     try {
       const existingUser = await this.databaseService.user.findUnique({
-        where: { id },
+        where: { id: Number(id) },
       });
       if (!existingUser) {
         throw new NotFoundException('User not found');
       }
 
       return await this.databaseService.user.delete({
-        where: { id },
+        where: { id: Number(id) },
       });
     } catch (error) {
       throw new BadRequestException('Failed to delete user');

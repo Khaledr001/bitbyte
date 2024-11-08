@@ -10,6 +10,7 @@ import {
   HttpStatus,
   UsePipes,
   ValidationPipe,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -18,6 +19,7 @@ import {
   ApiBody,
   ApiQuery,
   ApiParam,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -36,6 +38,8 @@ import {
 import { ErrorResponse } from 'src/shared/dto/error-response.dto';
 import { Roles } from 'src/auth/decorator/role.decorator';
 import { Role } from 'src/shared/role-enum';
+import { JwtAuthGuard } from '../auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles/roles.guard';
 
 @ApiTags('Products')
 @Controller('products')
@@ -58,6 +62,8 @@ export class ProductController {
     description: 'Failed to create product.',
     type: ErrorResponse,
   })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   async create(@Body() createProductDto: CreateProductDto) {
     try {
@@ -164,6 +170,8 @@ export class ProductController {
     description: 'Product not found.',
     type: ErrorResponse,
   })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   async update(
     @Param('id') id: string,
@@ -198,6 +206,8 @@ export class ProductController {
     description: 'Product not found.',
     type: ErrorResponse,
   })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   async remove(@Param('id') id: string) {
     try {

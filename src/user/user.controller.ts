@@ -11,13 +11,22 @@ import {
   ValidationPipe,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiResponse, ApiOperation, ApiParam } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiResponse,
+  ApiOperation,
+  ApiParam,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ResponseService } from '../shared/response.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
+import { Roles } from 'src/auth/decorator/role.decorator';
+import { RolesGuard } from 'src/auth/guards/roles/roles.guard';
+import { Role } from 'src/shared/role-enum';
 
 @ApiTags('Users')
 @Controller('users')
@@ -34,7 +43,6 @@ export class UserController {
     description: 'The user has been successfully created.',
     type: UserResponseDto,
   })
-  @UseGuards(JwtAuthGuard)
   @UsePipes(ValidationPipe)
   async create(@Body() createUserDto: CreateUserDto) {
     try {
@@ -60,6 +68,9 @@ export class UserController {
     description: 'List of all users.',
     type: [UserResponseDto],
   })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   async findAll() {
     try {
       const users = await this.userService.findAll();
@@ -85,6 +96,8 @@ export class UserController {
     description: 'The found user.',
     type: UserResponseDto,
   })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   async findOne(@Param('id') id: number) {
     try {
       const user = await this.userService.findOne({ id });
@@ -110,6 +123,8 @@ export class UserController {
     description: 'The user has been successfully updated.',
     type: UserResponseDto,
   })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @UsePipes(ValidationPipe)
   async update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
     try {
