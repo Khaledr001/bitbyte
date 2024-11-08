@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  HttpStatus,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -25,12 +26,20 @@ import {
   FilterOptions,
 } from './dto/pagination.dto';
 import { Product } from './dto/product.entity';
-
+import { ResponseService } from 'src/shared/response.service';
+import {
+  PaginatedResponse,
+  SuccessResponse,
+} from 'src/shared/dto/success-response.dto';
+import { ErrorResponse } from 'src/shared/dto/error-response.dto';
 
 @ApiTags('Products')
 @Controller('products')
 export class ProductController {
-  constructor(private readonly productService: ProductService) {}
+  constructor(
+    private readonly productService: ProductService,
+    private readonly responseService: ResponseService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new product' })
@@ -38,10 +47,58 @@ export class ProductController {
   @ApiResponse({
     status: 201,
     description: 'The product has been successfully created.',
-    type: Product,
+    type: SuccessResponse<Product>,
   })
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productService.create(createProductDto);
+  @ApiResponse({
+    status: 400,
+    description: 'Failed to create product.',
+    type: ErrorResponse,
+  })
+  async create(@Body() createProductDto: CreateProductDto) {
+    try {
+      const product = await this.productService.create(createProductDto);
+      return this.responseService.success(
+        product,
+        'Product created successfully',
+        HttpStatus.CREATED,
+      );
+    } catch (error) {
+      return this.responseService.error(
+        'Failed to create product',
+        HttpStatus.BAD_REQUEST,
+        error.message,
+      );
+    }
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get a product by id' })
+  @ApiParam({ name: 'id', type: 'number' })
+  @ApiResponse({
+    status: 200,
+    description: 'The found product.',
+    type: SuccessResponse<Product>,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Product not found.',
+    type: ErrorResponse,
+  })
+  async findOne(@Param('id') id: string) {
+    try {
+      const product = await this.productService.findOne(+id);
+      return this.responseService.success(
+        product,
+        'Product retrieved successfully',
+        HttpStatus.OK,
+      );
+    } catch (error) {
+      return this.responseService.error(
+        `Failed to retrieve product with ID ${id}`,
+        HttpStatus.NOT_FOUND,
+        error.message,
+      );
+    }
   }
 
   @Get()
@@ -51,32 +108,40 @@ export class ProductController {
   @ApiQuery({ type: FilterOptions })
   @ApiResponse({
     status: 200,
-    description: 'List of products.',
-    type: Product,
-    isArray: true,
+    description: 'List of products with pagination.',
+    type: PaginatedResponse<Product>,
   })
-  findAll(
+  @ApiResponse({
+    status: 404,
+    description: 'Product not found.',
+    type: ErrorResponse,
+  })
+  async findAll(
     @Query() paginationOptions: PaginationOptions,
     @Query() sortOptions: SortOptions,
     @Query() filterOptions: FilterOptions,
   ) {
-    return this.productService.findAll(
-      paginationOptions,
-      sortOptions,
-      filterOptions,
-    );
-  }
-
-  @Get(':id')
-  @ApiOperation({ summary: 'Get a product by id' })
-  @ApiParam({ name: 'id', type: 'number' })
-  @ApiResponse({
-    status: 200,
-    description: 'The found product.',
-    type: Product,
-  })
-  findOne(@Param('id') id: string) {
-    return this.productService.findOne(+id);
+    try {
+      const result = await this.productService.findAll(
+        paginationOptions,
+        sortOptions,
+        filterOptions,
+      );
+      return this.responseService.paginated(
+        result.items,
+        result.total,
+        paginationOptions.page,
+        paginationOptions.limit,
+        'Products retrieved successfully',
+        HttpStatus.OK,
+      );
+    } catch (error) {
+      return this.responseService.error(
+        'Failed to retrieve products',
+        HttpStatus.BAD_REQUEST,
+        error.message,
+      );
+    }
   }
 
   @Patch(':id')
@@ -86,10 +151,31 @@ export class ProductController {
   @ApiResponse({
     status: 200,
     description: 'The product has been successfully updated.',
-    type: Product,
+    type: SuccessResponse<Product>,
   })
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productService.update(+id, updateProductDto);
+  @ApiResponse({
+    status: 404,
+    description: 'Product not found.',
+    type: ErrorResponse,
+  })
+  async update(
+    @Param('id') id: string,
+    @Body() updateProductDto: UpdateProductDto,
+  ) {
+    try {
+      const product = await this.productService.update(+id, updateProductDto);
+      return this.responseService.success(
+        product,
+        'Product updated successfully',
+        HttpStatus.OK,
+      );
+    } catch (error) {
+      return this.responseService.error(
+        `Failed to update product with ID ${id}`,
+        HttpStatus.NOT_FOUND,
+        error.message,
+      );
+    }
   }
 
   @Delete(':id')
@@ -98,9 +184,27 @@ export class ProductController {
   @ApiResponse({
     status: 200,
     description: 'The product has been successfully deleted.',
-    type: Product,
+    type: SuccessResponse<Product>,
   })
-  remove(@Param('id') id: string) {
-    return this.productService.remove(+id);
+  @ApiResponse({
+    status: 404,
+    description: 'Product not found.',
+    type: ErrorResponse,
+  })
+  async remove(@Param('id') id: string) {
+    try {
+      const product = await this.productService.remove(+id);
+      return this.responseService.success(
+        product,
+        'Product deleted successfully',
+        HttpStatus.OK,
+      );
+    } catch (error) {
+      return this.responseService.error(
+        `Failed to delete product with ID ${id}`,
+        HttpStatus.NOT_FOUND,
+        error.message,
+      );
+    }
   }
 }

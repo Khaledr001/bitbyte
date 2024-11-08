@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_CONFIG } from './config/app.config';
 import { DatabaseModule } from './database/database.module';
 import { ProductModule } from './product/product.module';
+import { SharedModule } from './shared/shared.module';
 
 @Module({
   imports: [
@@ -16,8 +17,10 @@ import { ProductModule } from './product/product.module';
     }),
     DatabaseModule,
     ProductModule,
+    SharedModule,
   ],
   controllers: [AppController],
   providers: [AppService],
+  exports: [],
 })
 export class AppModule {}
