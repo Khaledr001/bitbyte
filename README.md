@@ -15,3 +15,10 @@ npm i
 npx prisma generate
 npm run start:dev
 ```
+## API Reference
+
+After successfully running the project. You can see api reference -
+```
+http://localhost:6100/api-docs
+```
+
