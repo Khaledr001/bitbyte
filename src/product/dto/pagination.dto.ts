@@ -29,7 +29,7 @@ export class SortOptions {
   })
   @IsString()
   @IsOptional()
-  sortField: string = 'createdAt';
+  sortField?: string = 'createdAt';
 
   @ApiPropertyOptional({
     example: 'desc',
@@ -38,7 +38,7 @@ export class SortOptions {
   })
   @IsEnum(['asc', 'desc'])
   @IsOptional()
-  sortOrder: 'asc' | 'desc' = 'desc';
+  sortOrder?: string | 'asc' | 'desc' = 'desc';
 }
 
 export class FilterOptions {
@@ -48,7 +48,7 @@ export class FilterOptions {
   })
   @IsString()
   @IsOptional()
-  category: string;
+  category?: string;
 
   @ApiPropertyOptional({
     example: 'product',
@@ -56,5 +56,5 @@ export class FilterOptions {
   })
   @IsOptional()
   @IsString()
-  search: string = 'product';
+  search?: string = 'product';
 }

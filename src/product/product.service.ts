@@ -11,7 +11,7 @@ import {
   SortOptions,
 } from './dto/pagination.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { DatabaseService } from 'src/database/database.service';
+import { DatabaseService } from '../database/database.service';
 
 @Injectable()
 export class ProductService {

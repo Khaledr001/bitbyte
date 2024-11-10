@@ -30,16 +30,16 @@ import {
   FilterOptions,
 } from './dto/pagination.dto';
 import { Product } from './dto/product.entity';
-import { ResponseService } from 'src/shared/response.service';
+import { ResponseService } from '../shared/response.service';
 import {
   PaginatedResponse,
   SuccessResponse,
-} from 'src/shared/dto/success-response.dto';
-import { ErrorResponse } from 'src/shared/dto/error-response.dto';
-import { Roles } from 'src/auth/decorator/role.decorator';
-import { Role } from 'src/shared/role-enum';
+} from '../shared/dto/success-response.dto';
+import { ErrorResponse } from '../shared/dto/error-response.dto';
+import { Roles } from '../auth/decorator/role.decorator';
+import { Role } from '../shared/role-enum';
 import { JwtAuthGuard } from '../auth/guards/auth.guard';
-import { RolesGuard } from 'src/auth/guards/roles/roles.guard';
+import { RolesGuard } from '../auth/guards/roles/roles.guard';
 
 @ApiTags('Products')
 @Controller('products')
